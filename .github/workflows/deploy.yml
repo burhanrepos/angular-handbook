@@ -1,0 +1,70 @@
+name: Deploy to GitHub Pages
+
+# Auto-deploy on every push to the default branch (and on-demand from the Actions tab).
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+# Permissions the deploy-pages action needs.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only one deployment at a time; a newer push cancels an in-progress run.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Compute base href
+        id: basehref
+        # Project pages live at /<repo>/ ; a <user>.github.io repo lives at / .
+        run: |
+          REPO="${{ github.event.repository.name }}"
+          if [[ "$REPO" == *.github.io ]]; then
+            echo "path=/" >> "$GITHUB_OUTPUT"
+          else
+            echo "path=/$REPO/" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build
+        run: npx ng build --base-href "${{ steps.basehref.outputs.path }}"
+
+      - name: SPA fallback + disable Jekyll
+        run: |
+          DIST="dist/angular-handbook-site/browser"
+          cp "$DIST/index.html" "$DIST/404.html"
+          touch "$DIST/.nojekyll"
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/angular-handbook-site/browser
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
