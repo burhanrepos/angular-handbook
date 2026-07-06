@@ -1,0 +1,23 @@
+<p>Angular has template-driven and reactive forms; prefer <strong>reactive</strong>. You build the form as objects in TypeScript (the source of truth) and bind them to inputs.</p>
+      <pre><code>form = new FormGroup({
+  title:      new FormControl('', [Validators.required]),
+  priority:   new FormControl(null),
+  multivalued: new FormArray([]),          <span class="cmt">// dynamic list of controls</span>
+});</code></pre>
+      <div class="table-wrap"><table>
+        <tr><th>Class</th><th>Represents</th></tr>
+        <tr><td><code>FormControl</code></td><td>one field + its validity</td></tr>
+        <tr><td><code>FormGroup</code></td><td>a set of named controls</td></tr>
+        <tr><td><code>FormArray</code></td><td>a dynamic list of controls</td></tr>
+      </table></div>
+      <pre><code>&lt;form [formGroup]="form"&gt;
+  &lt;input formControlName="title" /&gt;
+  @if (form.get('title')?.hasError('required')) { &lt;mat-error&gt;Required&lt;/mat-error&gt; }
+&lt;/form&gt;
+&lt;button [disabled]="form.invalid"&gt;Save&lt;/button&gt;</code></pre>
+      <ul>
+        <li><strong>Forms are streams:</strong> <code>form.valueChanges</code> / <code>control.valueChanges</code> are Observables — pipe them (Module 5).</li>
+        <li><strong><code>patchValue</code></strong> updates some fields (safe, partial); <strong><code>setValue</code></strong> requires all.</li>
+        <li>States: <code>valid</code>/<code>invalid</code>, <code>touched</code>, <code>dirty</code>, <code>pristine</code>.</li>
+      </ul>
+      <div class="callout iv"><span class="label">Interview</span><p><em>"Reactive vs template-driven?"</em> Reactive: model defined in TS, synchronous, easy to test, scales, great for dynamic/complex forms. Template-driven: model built from directives in the HTML (<code>ngModel</code>), simpler for small forms, async. Also know <strong>custom validators</strong> (a fn returning <code>ValidationErrors | null</code>) and <strong><code>ControlValueAccessor</code></strong> (makes a custom component behave as a form control).</p></div>

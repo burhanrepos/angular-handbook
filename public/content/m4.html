@@ -1,0 +1,17 @@
+<p>Components manage the screen; the real logic (API calls, calculations, shared data) belongs in <strong>services</strong>. Components reach services via <strong>Dependency Injection</strong>.</p>
+      <pre><code>@Injectable({ providedIn: 'root' })   <span class="cmt">// singleton for the whole app</span>
+export class PopularSearchTermsService {
+  private http = inject(HttpClient);   <span class="cmt">// ask for deps — don't `new` them</span>
+  private env = inject(EnvService);
+
+  getScheduledTerms(): Observable&lt;Term[]&gt; {
+    return this.http.get&lt;Term[]&gt;(`${this.env.apiUrl}/scheduled`); <span class="cmt">// returns, doesn't subscribe</span>
+  }
+}</code></pre>
+      <ul>
+        <li><strong><code>providedIn: 'root'</code></strong> — one shared instance app-wide (a singleton). Two components injecting it get the <em>same</em> object.</li>
+        <li><strong>DI benefits</strong> — sharing, testability (swap in mocks), no manual wiring.</li>
+        <li><strong>Services return Observables; they don't subscribe, navigate, or open dialogs.</strong> The caller (component/effect) decides what to do.</li>
+      </ul>
+      <div class="callout"><span class="label">Facade pattern</span><p>Services named <code>*-facade.service.ts</code> hide complexity (NgRx, GraphQL) behind simple methods and streams, so components stay ignorant of the machinery.</p></div>
+      <div class="callout iv"><span class="label">Interview</span><p><em>"<code>inject()</code> vs constructor injection?"</em> Same DI system. <code>inject()</code> is a function callable in an injection context (field initializers, constructors, factories); it's cleaner, composes into helper functions, and avoids long constructor signatures. It's the modern default.</p></div>

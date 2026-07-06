@@ -1,0 +1,249 @@
+<div class="module-tag"><span class="mnum">Appendix</span><span class="mkind">Interview Prep</span></div>
+      <h2>Popular Interview Questions &amp; Answers</h2>
+      <p>Grouped by topic and ordered roughly junior → senior. Read the question, answer it aloud, then expand to check. Anything marked <span class="pill modern">modern</span> is the current best practice; interviewers love when you can contrast it with the <span class="pill legacy">legacy</span> approach.</p>
+
+      <div class="qgroup">Core concepts</div>
+
+      <details class="qa"><summary>What is Angular, and how does it differ from a library like React?</summary>
+        <div class="ans"><p>Angular is a full, opinionated <strong>framework</strong> (routing, forms, HTTP, DI, testing all included), built with TypeScript. React is a UI <strong>library</strong> that leaves those choices to you. Angular uses a component + template + DI architecture and (increasingly) signals for reactivity.</p></div>
+      </details>
+
+      <details class="qa"><summary>What is a component, and what are its main parts?</summary>
+        <div class="ans"><p>A reusable unit of UI: a class with a <code>@Component</code> decorator (metadata: selector, template, styles, change detection), a template (HTML with bindings), and scoped styles. Components form a tree.</p></div>
+      </details>
+
+      <details class="qa"><summary>Explain the difference between <code>[ ]</code>, <code>( )</code>, and <code>[( )]</code>.</summary>
+        <div class="ans"><p><code>[prop]</code> = property/input binding (data in). <code>(event)</code> = event/output binding (event out). <code>[(x)]</code> = two-way binding, sugar for <code>[x]="v" (xChange)="v=$event"</code>.</p></div>
+      </details>
+
+      <details class="qa"><summary>What are standalone components and why do they matter? <span class="pill modern">modern</span></summary>
+        <div class="ans"><p>Components/directives/pipes that declare their own dependencies via <code>imports</code>, with no owning NgModule. Default since v17. Benefits: less boilerplate, better tree-shaking, simpler lazy loading (lazy-load a component or a routes array directly), easier testing.</p></div>
+      </details>
+
+      <details class="qa"><summary>Interpolation vs property binding — is <code>{{x}}</code> the same as <code>[textContent]="x"</code>?</summary>
+        <div class="ans"><p>Nearly. Interpolation coerces to string and concatenates; property binding sets the actual DOM property and can carry any type. Use interpolation for text, property binding for non-string properties and expressions.</p></div>
+      </details>
+
+      <div class="qgroup">Signals &amp; reactivity</div>
+
+      <details class="qa"><summary>What is a signal? How do you read and write one?</summary>
+        <div class="ans"><p>A reactive container for a value. Read by calling it: <code>count()</code>. Write with <code>.set(v)</code> or <code>.update(fn)</code>. When it changes, Angular re-renders consumers (even zoneless). Never use <code>.mutate()</code>.</p></div>
+      </details>
+
+      <details class="qa"><summary><code>computed()</code> vs a method vs <code>effect()</code>?</summary>
+        <div class="ans"><p><code>computed()</code> = a memoized derived value; recomputes only when its signal dependencies change. A method runs on every change-detection cycle (avoid in templates). <code>effect()</code> runs a side effect when signals change — use sparingly, not for deriving values.</p></div>
+      </details>
+
+      <details class="qa"><summary>How do signals relate to RxJS? How do you bridge them?</summary>
+        <div class="ans"><p>Signals are synchronous, pull-based, glitch-free state; RxJS models async streams over time. Bridge with <code>toSignal(obs$)</code> and <code>toObservable(sig)</code>. Use signals for component state, RxJS for events/async pipelines.</p></div>
+      </details>
+
+      <details class="qa"><summary>What is <code>input()</code> / <code>output()</code> / <code>model()</code>? <span class="pill modern">modern</span></summary>
+        <div class="ans"><p>Signal-based component I/O. <code>input()</code> (and <code>input.required()</code>) replaces <code>@Input</code> — read as a signal. <code>output()</code> replaces <code>@Output</code>. <code>model()</code> creates a two-way (input + <code>xChange</code> output) writable signal for <code>[(x)]</code> binding.</p></div>
+      </details>
+
+      <div class="qgroup">Directives, templates, pipes</div>
+
+      <details class="qa"><summary><code>@if/@for/@switch</code> vs <code>*ngIf/*ngFor/*ngSwitch</code>?</summary>
+        <div class="ans"><p>The <code>@</code>-blocks are the modern built-in control flow (v17+): faster, better type-narrowing, built into the compiler, with <code>@empty</code>/<code>@else</code>. The <code>*ng*</code> structural directives are legacy but still supported. <code>@for</code> requires <code>track</code>.</p></div>
+      </details>
+
+      <details class="qa"><summary>Why is <code>track</code> required in <code>@for</code>?</summary>
+        <div class="ans"><p>It identifies each item so Angular can reuse/move DOM nodes instead of destroying and recreating the whole list on every change — huge for performance and preserving element state/focus. Use a stable unique id.</p></div>
+      </details>
+
+      <details class="qa"><summary>Difference between a component, an attribute directive, and a structural directive?</summary>
+        <div class="ans"><p>Component = directive with a template. Attribute directive = changes appearance/behaviour of an existing element (<code>[clickOutside]</code>). Structural directive = changes DOM layout by adding/removing elements (<code>*ngIf</code>; the <code>@</code>-blocks now cover this).</p></div>
+      </details>
+
+      <details class="qa"><summary>Pure vs impure pipe?</summary>
+        <div class="ans"><p>A pure pipe (default) recomputes only when its input reference changes — cached, fast. An impure pipe runs every CD cycle (e.g. <code>async</code>). Prefer pure pipes; avoid method calls in templates for the same reason.</p></div>
+      </details>
+
+      <details class="qa"><summary><code>ng-content</code> vs <code>ng-template</code> vs <code>ng-container</code>?</summary>
+        <div class="ans"><p><code>ng-content</code> projects caller content into a slot (with <code>select</code> for multi-slot). <code>ng-template</code> defines markup not rendered until asked (a <code>TemplateRef</code>, rendered via <code>ngTemplateOutlet</code>). <code>ng-container</code> is a grouping element that renders no DOM.</p></div>
+      </details>
+
+      <div class="qgroup">Dependency Injection &amp; services</div>
+
+      <details class="qa"><summary>How does Angular's DI work? What is a provider?</summary>
+        <div class="ans"><p>A hierarchical injector system resolves dependencies by token. A <strong>provider</strong> tells the injector how to create a token's value: <code>{ provide: TOKEN, useClass/useValue/useFactory/useExisting }</code>. Injectors form a tree (root → route → component); resolution walks up until found.</p></div>
+      </details>
+
+      <details class="qa"><summary><code>providedIn: 'root'</code> vs providing in a component?</summary>
+        <div class="ans"><p><code>'root'</code> = a single app-wide singleton (tree-shakable). Providing at a component creates a new instance per component instance and its children — useful for scoped state. Providing in a lazy route scopes to that route.</p></div>
+      </details>
+
+      <details class="qa"><summary>What does <code>multi: true</code> do?</summary>
+        <div class="ans"><p>Registers multiple values under one token as an array instead of overwriting. It's how the HTTP interceptor chain, validators, and app initializers are assembled.</p></div>
+      </details>
+
+      <details class="qa"><summary>What is an <code>InjectionToken</code> and when do you use one?</summary>
+        <div class="ans"><p>A typed token for injecting non-class values (config objects, primitives, functions) or for abstracting a dependency so a generic service doesn't depend on a concrete app class. Combine with <code>@Optional()</code> so code still works when no provider is registered.</p></div>
+      </details>
+
+      <div class="qgroup">RxJS &amp; HTTP</div>
+
+      <details class="qa"><summary>Observable vs Promise?</summary>
+        <div class="ans"><p>Promise: single value, eager, not cancellable. Observable: 0..n values over time, lazy (runs on subscribe), cancellable, composable via operators. Angular HTTP returns Observables.</p></div>
+      </details>
+
+      <details class="qa"><summary><code>switchMap</code> vs <code>mergeMap</code> vs <code>concatMap</code> vs <code>exhaustMap</code>?</summary>
+        <div class="ans"><p><strong>switchMap</strong>: cancel previous inner, keep latest (search). <strong>mergeMap</strong>: run all concurrently (parallel independent calls). <strong>concatMap</strong>: queue in order (sequential saves). <strong>exhaustMap</strong>: ignore new while one is running (prevent double-submit, polling).</p></div>
+      </details>
+
+      <details class="qa"><summary>How do you avoid memory leaks from subscriptions?</summary>
+        <div class="ans"><p>Prefer the <code>async</code> pipe (auto-unsubscribes). For manual subscriptions use <code>takeUntilDestroyed(destroyRef)</code> <span class="pill modern">modern</span>, or <code>takeUntil(destroy$)</code> in <code>ngOnDestroy</code>, or the <code>untilDestroyed</code> lib. Operators that complete (like HTTP + <code>first()</code>) also self-clean.</p></div>
+      </details>
+
+      <details class="qa"><summary>What is an HTTP interceptor and give real uses.</summary>
+        <div class="ans"><p>Middleware that transforms every request/response. Uses: attach auth tokens, add tenant/locale headers, global error handling, retry, logging, caching. Modern form is a functional <code>HttpInterceptorFn</code> registered via <code>provideHttpClient(withInterceptors([...]))</code>; legacy is a class + <code>HTTP_INTERCEPTORS</code> multi-provider.</p></div>
+      </details>
+
+      <details class="qa"><summary>How would you build a debounced typeahead?</summary>
+        <div class="ans"><p><code>control.valueChanges.pipe(debounceTime(300), distinctUntilChanged(), switchMap(t =&gt; api.search(t)))</code>. <code>debounceTime</code> waits for a pause, <code>distinctUntilChanged</code> skips duplicates, <code>switchMap</code> cancels stale requests.</p></div>
+      </details>
+
+      <div class="qgroup">Forms</div>
+
+      <details class="qa"><summary>Reactive vs template-driven forms?</summary>
+        <div class="ans"><p>Reactive: model in TS (<code>FormGroup</code>/<code>FormControl</code>), synchronous, testable, scales, good for dynamic/complex forms. Template-driven: model inferred from <code>ngModel</code> directives in HTML, async, simpler for tiny forms. Prefer reactive.</p></div>
+      </details>
+
+      <details class="qa"><summary>How do you write a custom validator? A cross-field validator?</summary>
+        <div class="ans"><p>A function <code>(control) =&gt; ValidationErrors | null</code> returning e.g. <code>{ invalidX: true }</code> or <code>null</code>. Cross-field validators are placed on the <code>FormGroup</code> and read multiple child controls. Async validators return an Observable/Promise of errors.</p></div>
+      </details>
+
+      <details class="qa"><summary>What is <code>ControlValueAccessor</code>?</summary>
+        <div class="ans"><p>An interface that lets a custom component act as a native form control — implement <code>writeValue</code>, <code>registerOnChange</code>, <code>registerOnTouched</code>, <code>setDisabledState</code> and provide <code>NG_VALUE_ACCESSOR</code>. Then a parent can use <code>[(ngModel)]</code> or <code>formControlName</code> on your component.</p></div>
+      </details>
+
+      <div class="qgroup">Routing</div>
+
+      <details class="qa"><summary>How does lazy loading work and why use it?</summary>
+        <div class="ans"><p><code>loadChildren: () =&gt; import('./x').then(m =&gt; m.routes)</code> downloads a feature's code only when its route is first visited, shrinking the initial bundle and speeding startup. Standalone lets you lazy-load a single component too.</p></div>
+      </details>
+
+      <details class="qa"><summary>Types of route guards?</summary>
+        <div class="ans"><p><code>canActivate</code> (enter), <code>canActivateChild</code> (enter children), <code>canMatch</code>/<code>canLoad</code> (match/download a lazy route), <code>canDeactivate</code> (leave — unsaved-changes prompts). Modern guards are functions returning <code>boolean | UrlTree | Observable&lt;...&gt;</code>.</p></div>
+      </details>
+
+      <details class="qa"><summary>How do you read route params, and snapshot vs observable?</summary>
+        <div class="ans"><p><code>route.snapshot.paramMap.get('id')</code> for a one-time read; <code>route.paramMap.subscribe(...)</code> when the param can change while staying on the same component (Angular reuses it). Same distinction for query params and <code>data</code>.</p></div>
+      </details>
+
+      <details class="qa"><summary>What is a resolver and a trade-off of using one?</summary>
+        <div class="ans"><p>Pre-fetches data before the route activates so the view opens ready. Trade-off: it delays navigation until data arrives (no loading state in-component), so overuse hurts perceived speed; often letting the component fetch with a spinner is better.</p></div>
+      </details>
+
+      <div class="qgroup">State management (NgRx)</div>
+
+      <details class="qa"><summary>When do you actually need NgRx?</summary>
+        <div class="ans"><p>When lots of components share and mutate the same state, you need predictable/traceable updates, undo/time-travel, or complex async coordination. For local or simple state, signals/services are enough — don't add NgRx by default.</p></div>
+      </details>
+
+      <details class="qa"><summary>Explain the NgRx data flow.</summary>
+        <div class="ans"><p>Component dispatches an <strong>action</strong> → <strong>reducer</strong> (pure) produces new state → store updates → <strong>selectors</strong> (memoized) emit to components. Side effects (API) run in <strong>effects</strong>, which listen for actions and dispatch success/failure actions.</p></div>
+      </details>
+
+      <details class="qa"><summary>Why must reducers be pure and immutable?</summary>
+        <div class="ans"><p>Purity makes state changes deterministic, testable, and enables time-travel debugging. Immutability (new references) is what lets <code>OnPush</code> and memoized selectors detect change cheaply by reference comparison.</p></div>
+      </details>
+
+      <details class="qa"><summary>Why put API calls in effects, not services or components?</summary>
+        <div class="ans"><p>Effects centralize side effects and their outcomes (dispatch success/failure, navigate, catch errors) while keeping reducers pure and services thin (services just return Observables). This separation keeps the whole loop predictable.</p></div>
+      </details>
+
+      <details class="qa"><summary>What does a selector's memoization give you?</summary>
+        <div class="ans"><p>It caches the last result and only recomputes when inputs change, avoiding redundant work and unnecessary emissions/re-renders. Selectors also compose, so you derive complex views without recomputing everything.</p></div>
+      </details>
+
+      <div class="qgroup">Change detection &amp; performance</div>
+
+      <details class="qa"><summary>What triggers change detection, and what does OnPush change?</summary>
+        <div class="ans"><p>By default (Zone.js) any async event (clicks, timers, HTTP) triggers a full CD pass. <code>OnPush</code> limits a component to re-check only on input <em>reference</em> change, an event within it, an <code>async</code> emission, or a signal read change — letting Angular skip subtrees.</p></div>
+      </details>
+
+      <details class="qa"><summary>What is Zone.js and what is zoneless CD? <span class="pill modern">modern</span></summary>
+        <div class="ans"><p>Zone.js monkey-patches async APIs so Angular knows when to run CD automatically. Zoneless removes it and drives CD explicitly from signals, the <code>async</code> pipe, and event bindings — smaller bundle, better perf, no over-triggering. Enabled with <code>provideZonelessChangeDetection()</code>.</p></div>
+      </details>
+
+      <details class="qa"><summary>Name five ways to improve Angular performance.</summary>
+        <div class="ans"><p><code>OnPush</code>; <code>track</code> in <code>@for</code>; lazy loading + <code>@defer</code>; pure pipes/<code>computed()</code> over template methods; virtual scrolling; <code>NgOptimizedImage</code>; preloading strategies; avoiding unnecessary subscriptions; bundle budgets and tree-shaking.</p></div>
+      </details>
+
+      <details class="qa"><summary>What is <code>@defer</code> and its triggers?</summary>
+        <div class="ans"><p>A template block that lazy-loads its content and dependencies (auto code-split) with <code>@placeholder/@loading/@error</code>. Triggers: <code>on idle</code>, <code>on viewport</code>, <code>on interaction</code>, <code>on hover</code>, <code>on timer</code>, <code>when cond</code>, and <code>prefetch on ...</code>.</p></div>
+      </details>
+
+      <div class="qgroup">Lifecycle &amp; DOM</div>
+
+      <details class="qa"><summary>List the lifecycle hooks in order.</summary>
+        <div class="ans"><p><code>ngOnChanges</code> → <code>ngOnInit</code> → <code>ngDoCheck</code> → <code>ngAfterContentInit</code> → <code>ngAfterContentChecked</code> → <code>ngAfterViewInit</code> → <code>ngAfterViewChecked</code> → <code>ngOnDestroy</code>. Modern: signals/<code>effect</code> and <code>afterNextRender</code>/<code>afterRender</code> reduce the need for several.</p></div>
+      </details>
+
+      <details class="qa"><summary>Why can't you access a <code>viewChild</code> element in <code>ngOnInit</code>?</summary>
+        <div class="ans"><p>The view isn't rendered yet in <code>ngOnInit</code>. View queries resolve by <code>ngAfterViewInit</code> (or read the <code>viewChild()</code> signal after that). DOM measurement/focus belongs there or in <code>afterNextRender</code>.</p></div>
+      </details>
+
+      <details class="qa"><summary><code>viewChild</code> vs <code>contentChild</code>?</summary>
+        <div class="ans"><p><code>viewChild</code> queries elements/components in the component's <em>own</em> template. <code>contentChild</code> queries content <em>projected</em> into it via <code>ng-content</code>.</p></div>
+      </details>
+
+      <div class="qgroup">SSR, hydration, i18n</div>
+
+      <details class="qa"><summary>CSR vs SSR vs SSG — when to use each?</summary>
+        <div class="ans"><p>CSR for internal apps where SEO/first-paint don't matter. SSR for public, dynamic, SEO-sensitive pages (renders real HTML per request). SSG for content known at build time (docs, marketing) — prerendered static files, fastest and cheapest.</p></div>
+      </details>
+
+      <details class="qa"><summary>What is hydration, and destructive vs non-destructive?</summary>
+        <div class="ans"><p>Hydration is the client app taking over server-rendered DOM. Non-destructive (modern, via <code>provideClientHydration()</code>) reuses the existing DOM — no flicker. Destructive (old) threw it away and re-rendered.</p></div>
+      </details>
+
+      <details class="qa"><summary>What is incremental hydration and event replay?</summary>
+        <div class="ans"><p>Incremental hydration (<code>withIncrementalHydration()</code> + <code>@defer (hydrate on ...)</code>) hydrates blocks lazily on a trigger, deferring their JS. Event replay (<code>withEventReplay()</code>) captures user events during the pre-hydration window and replays them once hydrated.</p></div>
+      </details>
+
+      <details class="qa"><summary>Top SSR bug: what breaks and how do you fix it?</summary>
+        <div class="ans"><p>Using browser globals (<code>window</code>, <code>document</code>, <code>localStorage</code>) on the server crashes it. Guard with <code>isPlatformBrowser(inject(PLATFORM_ID))</code> or use <code>afterNextRender()</code>/<code>afterRender()</code> (browser-only). Also avoid direct DOM manipulation and invalid HTML that cause hydration mismatches.</p></div>
+      </details>
+
+      <details class="qa"><summary>Angular built-in i18n vs ngx-translate?</summary>
+        <div class="ans"><p>Built-in is <strong>compile-time</strong>: <code>i18n</code> attribute + <code>$localize</code>, extract with <code>ng extract-i18n</code>, one bundle per locale — best performance/SEO but a rebuild to switch. ngx-translate/Transloco are <strong>runtime</strong>: JSON dictionaries, switch language live, one bundle — more flexible, slightly heavier.</p></div>
+      </details>
+
+      <div class="qgroup">Security &amp; accessibility</div>
+
+      <details class="qa"><summary>How does Angular protect against XSS?</summary>
+        <div class="ans"><p>Contextual auto-sanitization (HTML/style/URL/resource-URL) and always-escaped interpolation. Binding to <code>[innerHTML]</code> is sanitized. You only open a hole by bypassing sanitization (<code>bypassSecurityTrust*</code>) or manipulating the DOM/strings directly.</p></div>
+      </details>
+
+      <details class="qa"><summary>When is <code>DomSanitizer.bypassSecurityTrustHtml</code> appropriate?</summary>
+        <div class="ans"><p>Only for content you fully control/trust (never raw user input). It disables sanitization for that value, so misuse reintroduces XSS. Prefer letting Angular sanitize.</p></div>
+      </details>
+
+      <details class="qa"><summary>How do you make an Angular app accessible?</summary>
+        <div class="ans"><p>Semantic HTML first, ARIA to fill gaps; WCAG AA contrast; visible focus; full keyboard support; focus management for dialogs/menus (CDK <code>FocusTrap</code>, <code>LiveAnnouncer</code>); announce dynamic changes with <code>aria-live</code>; test with axe, keyboard, and a screen reader.</p></div>
+      </details>
+
+      <div class="qgroup">Architecture &amp; senior-level</div>
+
+      <details class="qa"><summary>NgModule vs standalone — how would you migrate?</summary>
+        <div class="ans"><p>Standalone removes NgModules; components import their own deps and the app bootstraps via <code>bootstrapApplication</code> + <code>provideX()</code>. Migrate incrementally (they interop): convert leaf components first with the CLI schematic, replace <code>SomeModule.forRoot()</code> with providers, then drop modules. A hybrid app is normal mid-migration.</p></div>
+      </details>
+
+      <details class="qa"><summary>How do you decide between signals, RxJS, and NgRx for state?</summary>
+        <div class="ans"><p>Signals for local/component and simple shared state (via a service). RxJS for async streams and event orchestration. NgRx for large, cross-cutting, shared state needing traceability and structure. Use the lightest tool that fits; combine them (e.g. signals + <code>toObservable</code>).</p></div>
+      </details>
+
+      <details class="qa"><summary>What makes a service well-designed?</summary>
+        <div class="ans"><p>Single responsibility; returns Observables rather than subscribing; doesn't inject UI concerns (<code>MatDialog</code>/<code>Router</code>/<code>Store</code>) unless that's its job; depends on abstractions (<code>InjectionToken</code>) not concrete app classes; reference-counted loading state; no dead/legacy public API.</p></div>
+      </details>
+
+      <details class="qa"><summary>How does the CLI help with upgrades and consistency?</summary>
+        <div class="ans"><p><code>ng update</code> runs automated migration schematics for breaking changes across versions; <code>ng generate</code> scaffolds consistent artifacts; lint + budgets enforce standards; DevTools and the Language Service catch issues early. Staying current keeps the app fast and secure.</p></div>
+      </details>
+
+      <details class="qa"><summary>Explain the OnPush + immutability + signals connection.</summary>
+        <div class="ans"><p>They're one system. <code>OnPush</code> detects change by reference or signal notification. Immutable updates (NgRx <code>...spread</code>) and signal writes both produce those signals, so the UI updates correctly and cheaply. Mutating in place under <code>OnPush</code> is the classic "why isn't my view updating?" bug.</p></div>
+      </details>

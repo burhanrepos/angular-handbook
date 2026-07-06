@@ -1,0 +1,21 @@
+<p>An <strong>Observable</strong> is a lazy stream of values over time. Angular uses them for HTTP, form changes, router events, and NgRx. Three habits: they're <strong>lazy</strong> (nothing runs until subscribed), you <strong>transform in <code>.pipe()</code></strong>, and you <strong>must clean up</strong>.</p>
+      <pre><code>this.searchControl.valueChanges         <span class="cmt">// stream of keystrokes</span>
+  .pipe(
+    tap(() =&gt; this.loading.set(true)),    <span class="cmt">// side effect (no value change)</span>
+    debounceTime(300),                    <span class="cmt">// wait for a typing pause</span>
+    switchMap(term =&gt; this.api.search(term)), <span class="cmt">// cancels previous request</span>
+    takeUntilDestroyed(this.destroyRef),  <span class="cmt">// cleanup on destroy</span>
+  )
+  .subscribe(results =&gt; this.results.set(results));</code></pre>
+      <h3>The map family (higher-order operators)</h3>
+      <div class="table-wrap"><table>
+        <tr><th>Operator</th><th>Behaviour</th><th>Use for</th></tr>
+        <tr><td><code>switchMap</code></td><td>cancel previous, keep latest</td><td>search / typeahead</td></tr>
+        <tr><td><code>concatMap</code></td><td>queue in order</td><td>ordered saves</td></tr>
+        <tr><td><code>mergeMap</code></td><td>run all in parallel</td><td>independent calls</td></tr>
+        <tr><td><code>exhaustMap</code></td><td>ignore new while busy</td><td>double-submit, polling</td></tr>
+      </table></div>
+      <h3>Consuming: prefer the <code>async</code> pipe</h3>
+      <pre><code>@if (data$ | async; as data) { {{ data.name }} }  <span class="cmt">// auto-subscribe + auto-unsubscribe</span></code></pre>
+      <div class="callout tip"><span class="label">Cleanup rule</span><p>If you can use the <code>async</code> pipe, do. If you must <code>.subscribe()</code> in code, you <strong>must</strong> add cleanup — <code>takeUntilDestroyed(destroyRef)</code> (modern) or <code>untilDestroyed(this)</code> (legacy lib).</p></div>
+      <div class="callout iv"><span class="label">Interview</span><p><em>"Observable vs Promise?"</em> A Promise resolves once and is eager. An Observable is lazy, can emit many values, is cancellable, and composes with operators. HTTP in Angular returns an Observable that fires only on subscribe.</p></div>

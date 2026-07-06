@@ -1,0 +1,10 @@
+<p>A pipe transforms a value <em>for display</em> without changing the underlying data: <code>{{ value | pipeName:arg }}</code>.</p>
+      <pre><code>@Pipe({ name: 'fileSize' })          <span class="cmt">// standalone by default</span>
+export class FileSizePipe implements PipeTransform {
+  transform(value: number): string {
+    const kb = value / 1024;
+    return kb &gt; 1024 ? `${(kb/1024).toFixed(1)} MB` : `${Math.round(kb)} KB`;
+  }
+}</code></pre>
+      <p>Built-ins you'll use: <code>date</code>, <code>number</code>, <code>currency</code>, <code>uppercase</code>, <code>json</code>, <code>slice</code>, <code>async</code>. Chain with <code>|</code>, pass args with <code>:</code>.</p>
+      <div class="callout"><span class="label">Pure vs impure</span><p>A <strong>pure</strong> pipe (default) recomputes only when its input <em>reference</em> changes — cached and fast. An <strong>impure</strong> pipe (<code>pure: false</code>) runs every change-detection cycle (the <code>async</code> pipe is impure). Prefer pure pipes; this is why the codebase forbids method calls in templates.</p></div>

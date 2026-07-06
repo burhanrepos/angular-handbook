@@ -1,0 +1,39 @@
+<h3>Built-in control flow <span class="pill modern">modern</span></h3>
+      <pre><code>@if (isFormArray) { &lt;chip-grid/&gt; } @else { &lt;input/&gt; }
+
+@for (option of options; track option.id) {
+  &lt;mat-option [value]="option"&gt;{{ option.name }}&lt;/mat-option&gt;
+} @empty {
+  &lt;p&gt;Nothing found&lt;/p&gt;
+}
+
+@switch (state) {
+  @case ('PENDING')  { &lt;span&gt;Pending&lt;/span&gt; }
+  @case ('ACCEPTED') { &lt;span&gt;Accepted&lt;/span&gt; }
+  @default           { &lt;span&gt;{{ state }}&lt;/span&gt; }
+}
+
+@let total = price() * qty();   <span class="cmt">// name a value once, reuse in template</span></code></pre>
+      <ul>
+        <li><strong><code>track</code> is mandatory in <code>@for</code></strong> — it identifies each item so Angular reuses DOM nodes instead of re-rendering the whole list. Use a stable id, or <code>track $index</code>.</li>
+        <li>Implicit vars in <code>@for</code>: <code>$index</code>, <code>$first</code>, <code>$last</code>, <code>$even</code>, <code>$odd</code>, <code>$count</code>.</li>
+      </ul>
+      <div class="callout warn"><span class="label">Legacy</span><p>Older code uses <code>*ngIf</code>, <code>*ngFor</code>, <code>*ngSwitch</code> (structural directives with <code>*</code>). The <code>@</code>-blocks are faster and are the default now. Recognize both; write the new ones.</p></div>
+
+      <h3>Directives: three kinds</h3>
+      <div class="table-wrap"><table>
+        <tr><th>Kind</th><th>Does</th><th>Examples</th></tr>
+        <tr><td>Structural</td><td>add/remove elements</td><td><code>@if</code>/<code>@for</code>, legacy <code>*ngIf</code></td></tr>
+        <tr><td>Attribute</td><td>change appearance/behaviour</td><td><code>[class.x]</code>, custom <code>[clickOutside]</code></td></tr>
+        <tr><td>Component</td><td>a directive with a template</td><td>every component</td></tr>
+      </table></div>
+      <pre><code>@Directive({
+  selector: '[clickOutside]',                       <span class="cmt">// attribute selector, in [brackets]</span>
+  host: { '(document:click)': 'onClick($event.target)' }, <span class="cmt">// host object, NOT @HostListener</span>
+})
+export class ClickOutsideDirective {
+  private el = inject(ElementRef);
+  clickOutside = output&lt;void&gt;();
+  onClick(t: EventTarget | null) { /* emit if outside */ }
+}</code></pre>
+      <div class="callout"><span class="label">Convention</span><p>Modern Angular: use <code>inject()</code> not constructor injection, <code>output()</code> not <code>@Output</code>, and the <code>host</code> object not <code>@HostListener</code>/<code>@HostBinding</code>.</p></div>

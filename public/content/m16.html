@@ -1,0 +1,26 @@
+<h3>Performance levers</h3>
+      <ul>
+        <li><strong><code>OnPush</code></strong> change detection everywhere.</li>
+        <li><strong><code>track</code></strong> in <code>@for</code> to reuse DOM nodes.</li>
+        <li><strong>Lazy loading</strong> routes (<code>loadChildren</code>) and <strong><code>@defer</code></strong> for widgets.</li>
+        <li><strong>Preloading strategies</strong>: <code>PreloadAllModules</code> or a custom strategy to warm lazy chunks after load.</li>
+        <li>Pure <strong>pipes</strong> / <strong><code>computed()</code></strong> instead of template method calls.</li>
+        <li><strong>trackBy</strong>, virtual scrolling (<code>cdk-virtual-scroll</code>), <code>NgOptimizedImage</code> for images, bundle budgets.</li>
+      </ul>
+
+      <h3>Zoneless change detection <span class="pill modern">modern</span></h3>
+      <p>Historically Angular used <strong>Zone.js</strong> to monkey-patch async APIs and trigger change detection automatically. <strong>Zoneless</strong> (stable in recent versions) drops Zone.js and drives CD from <strong>signals</strong>, the <code>async</code> pipe, and event bindings instead — smaller bundle, better performance, clearer mental model. Enabled via <code>provideZonelessChangeDetection()</code>.</p>
+      <div class="callout iv"><span class="label">Interview</span><p><em>"What is Zone.js and what replaces it?"</em> Zone.js patches setTimeout/promises/events so Angular knows when to run change detection. Signals make change tracking explicit and fine-grained, enabling <strong>zoneless</strong> apps where CD runs only when a signal/async pipe/event actually changes something.</p></div>
+
+      <h3>Modern signal APIs</h3>
+      <div class="table-wrap"><table>
+        <tr><th>API</th><th>Purpose</th></tr>
+        <tr><td><code>signal()</code> / <code>computed()</code> / <code>effect()</code></td><td>writable state / derived / side effect</td></tr>
+        <tr><td><code>linkedSignal()</code></td><td>writable state that resets when a source changes</td></tr>
+        <tr><td><code>resource()</code> / <code>rxResource()</code></td><td>async data as signals (loading/error/value)</td></tr>
+        <tr><td><code>toSignal()</code> / <code>toObservable()</code></td><td>bridge between RxJS and signals</td></tr>
+        <tr><td><code>input()</code> / <code>output()</code> / <code>model()</code></td><td>signal-based component I/O</td></tr>
+      </table></div>
+
+      <h3>Tooling</h3>
+      <p><strong>Angular CLI</strong> (<code>ng generate</code>, <code>ng serve</code>, <code>ng build</code>), <strong><code>ng update</code></strong> (automated migrations for version upgrades), <strong>Angular DevTools</strong> (component tree, DI tree, profiler), <strong>Language Service</strong> (IDE completion/diagnostics), and <strong>schematics</strong> for scaffolding.</p>

@@ -1,0 +1,27 @@
+<p>Routing maps URLs to components, swapping content without a full reload. Routes are checked top-to-bottom; first match wins.</p>
+      <pre><code>const routes: Routes = [
+  { path: 'login', component: LoginComponent },
+  { path: 'products/:id', component: ProductComponent },        <span class="cmt">// :id = route param</span>
+  { path: 'admin',
+    loadChildren: () =&gt; import('./admin.routes').then(m =&gt; m.routes), <span class="cmt">// lazy load</span>
+    canActivate: [authGuard] },
+  { path: '**', redirectTo: '', pathMatch: 'full' },            <span class="cmt">// wildcard, MUST be last</span>
+];</code></pre>
+      <p>Matched components render into <code>&lt;router-outlet&gt;</code>. Nested routes (<code>children</code>) fill nested outlets — that's how a persistent shell + swapping content works.</p>
+      <div class="table-wrap"><table>
+        <tr><th>Feature</th><th>Purpose</th></tr>
+        <tr><td><code>loadChildren</code></td><td>lazy-load a feature only when visited (smaller initial bundle)</td></tr>
+        <tr><td>Guards</td><td><code>canActivate</code>, <code>canActivateChild</code>, <code>canMatch</code>/<code>canLoad</code>, <code>canDeactivate</code></td></tr>
+        <tr><td>Resolvers</td><td>pre-fetch data before the route activates</td></tr>
+        <tr><td><code>data</code></td><td>static config per route (title, roles, feature flag)</td></tr>
+      </table></div>
+      <pre><code><span class="cmt">// Functional guard (modern) — returns boolean or a UrlTree redirect</span>
+export const authGuard: CanActivateFn = () =&gt; {
+  const auth = inject(AuthService); const router = inject(Router);
+  return auth.isLoggedIn() ? true : router.createUrlTree(['/login']);
+};
+
+<span class="cmt">// Navigate / read params</span>
+inject(Router).navigate(['/products', id]);
+const id = inject(ActivatedRoute).snapshot.paramMap.get('id');</code></pre>
+      <p>In templates use <code>routerLink</code>, not <code>href</code> (which reloads): <code>&lt;a routerLink="/products"&gt;</code>, and <code>routerLinkActive="active"</code> for the active class.</p>

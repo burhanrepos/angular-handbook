@@ -1,0 +1,23 @@
+<div class="table-wrap"><table>
+        <tr><th>Mode</th><th>HTML built</th><th>Trade-off</th></tr>
+        <tr><td>CSR</td><td>in browser, after JS loads</td><td>simple; poor SEO &amp; first paint</td></tr>
+        <tr><td>SSR</td><td>on server, per request</td><td>SEO + fast FCP; needs a Node server</td></tr>
+        <tr><td>SSG</td><td>at build time</td><td>fastest/cheapest; static content only</td></tr>
+      </table></div>
+      <p>Add SSR with <code>ng add @angular/ssr</code> (creates <code>server.ts</code>, <code>main.server.ts</code>, <code>provideServerRendering()</code>).</p>
+
+      <h3>Hydration</h3>
+      <p><strong>Hydration</strong> = the client app "adopting" server-rendered DOM instead of rebuilding it. <strong>Non-destructive</strong> hydration reuses existing nodes (no flicker); the old destructive behaviour threw the DOM away and re-rendered.</p>
+      <pre><code>provideClientHydration(
+  withEventReplay(),          <span class="cmt">// replay clicks made before hydration finished</span>
+  withIncrementalHydration(), <span class="cmt">// hydrate blocks lazily (v19+)</span>
+)</code></pre>
+      <p><strong>Incremental hydration</strong> pairs with <code>@defer (hydrate on ...)</code> — server-renders a block for SEO/paint but defers its JS until a trigger. The <strong>HTTP transfer cache</strong> serializes server GET responses into the HTML so the client skips duplicate fetches.</p>
+
+      <h3><code>@defer</code> (deferrable views)</h3>
+      <pre><code>@defer (on viewport) { &lt;app-chart /&gt; }
+@placeholder { &lt;skeleton /&gt; } @loading { &lt;spinner /&gt; } @error { &lt;p&gt;Failed&lt;/p&gt; }</code></pre>
+      <p>Triggers: <code>on idle</code> (default), <code>on viewport</code>, <code>on interaction</code>, <code>on hover</code>, <code>on timer(5s)</code>, <code>when cond</code>, <code>prefetch on ...</code>. The block is auto code-split.</p>
+
+      <h3>Server-safe code (top SSR bug)</h3>
+      <p><code>window</code>/<code>document</code>/<code>localStorage</code> don't exist on the server. Guard with <code>isPlatformBrowser(inject(PLATFORM_ID))</code>, or use <code>afterNextRender()</code> / <code>afterRender()</code> which run only in the browser after render. Hydration mismatches come from direct DOM manipulation, invalid HTML nesting, or rendering different content on server vs client.</p>

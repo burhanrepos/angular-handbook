@@ -1,0 +1,16 @@
+<h3>Security</h3>
+      <ul>
+        <li><strong>XSS</strong> is the main threat. Angular auto-<strong>sanitizes</strong> values by context (HTML, style, URL, resource-URL) — interpolation is always escaped, so <code>{{ userInput }}</code> is safe by default.</li>
+        <li><strong><code>[innerHTML]</code></strong> binds sanitized HTML (strips scripts). To render trusted raw HTML, use <code>DomSanitizer.bypassSecurityTrustHtml(...)</code> — but only on content you fully trust (this is the risky escape hatch behind pipes like <code>nlToBr</code>/<code>safe</code>).</li>
+        <li><strong>Avoid</strong> <code>ElementRef.nativeElement.innerHTML = ...</code> and template concatenation of user data. Use Angular's bindings.</li>
+        <li><strong>CSP</strong> (Content Security Policy) + <strong>Trusted Types</strong> add defense-in-depth. Angular integrates with Trusted Types. Also: HttpOnly cookies / CSRF tokens (Angular's <code>HttpClient</code> has XSRF support), and never put secrets in the client bundle.</li>
+      </ul>
+      <div class="callout warn"><span class="label">Interview trap</span><p><em>"How does Angular prevent XSS?"</em> Contextual auto-sanitization + always-escaped interpolation. You only become vulnerable when you deliberately bypass it (<code>bypassSecurityTrust*</code>) or manipulate the DOM directly.</p></div>
+
+      <h3>Accessibility (a11y)</h3>
+      <ul>
+        <li>Target <strong>WCAG AA</strong>: sufficient <strong>color contrast</strong>, visible <strong>focus states</strong>, full <strong>keyboard operability</strong>.</li>
+        <li>Use <strong>semantic HTML</strong> first (<code>&lt;button&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;label&gt;</code>); add <strong>ARIA</strong> only to fill gaps (<code>aria-label</code>, <code>role</code>, <code>aria-live</code> for dynamic announcements).</li>
+        <li><strong>Focus management</strong>: move focus into dialogs, trap it, restore on close. The <strong>Angular CDK a11y</strong> module provides <code>FocusTrap</code>, <code>LiveAnnouncer</code>, and <code>FocusMonitor</code>.</li>
+        <li>Tools: <strong>axe</strong> for automated checks; test with a keyboard and a screen reader.</li>
+      </ul>

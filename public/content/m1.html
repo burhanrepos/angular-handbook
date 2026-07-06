@@ -1,0 +1,31 @@
+<p>Angular is a framework for building web apps. Instead of manually updating the DOM, you <em>declare</em> what the UI should look like and Angular keeps the screen in sync with your data. The core unit is the <strong>component</strong> — a reusable, self-contained piece of UI. A page is a tree of components nested like custom HTML tags.</p>
+
+      <h3>Anatomy of a component</h3>
+      <p>A component is a TypeScript class with a <code>@Component</code> decorator, usually split across three files: the <code>.ts</code> (logic/data), <code>.html</code> (template), and <code>.scss</code> (scoped styles).</p>
+      <pre><code>@Component({
+  selector: 'app-star-rating-display',   <span class="cmt">// the custom tag: &lt;app-star-rating-display /&gt;</span>
+  imports: [DecimalPipe, MatIconModule], <span class="cmt">// standalone: declares its own deps</span>
+  templateUrl: './star-rating-display.component.html',
+  styleUrl: './star-rating-display.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class StarRatingDisplayComponent {
+  rating = input&lt;number&gt;(0);   <span class="cmt">// data in, from a parent</span>
+  stars = computed(() =&gt; { /* which stars to fill */ });
+}</code></pre>
+      <ul>
+        <li><strong><code>selector</code></strong> — the tag used to place this component elsewhere. The <code>app-</code> prefix avoids clashing with real HTML.</li>
+        <li><strong>Scoped styles</strong> — <code>styleUrl</code> CSS affects only this component, never leaking out. A major Angular feature.</li>
+        <li><strong>Standalone</strong> — modern components declare dependencies in <code>imports</code>. You do <em>not</em> write <code>standalone: true</code>; it's the default.</li>
+      </ul>
+
+      <h3>The four things every template does</h3>
+      <div class="table-wrap"><table>
+        <tr><th>Technique</th><th>Syntax</th><th>Direction</th></tr>
+        <tr><td>Interpolation</td><td><code>{{ rating() }}</code></td><td>class → screen (text)</td></tr>
+        <tr><td>Property binding</td><td><code>[class.full]="x"</code></td><td>class → element property</td></tr>
+        <tr><td>Event binding</td><td><code>(click)="save()"</code></td><td>element event → class</td></tr>
+        <tr><td>Control flow</td><td><code>@if</code> / <code>@for</code></td><td>show / repeat elements</td></tr>
+      </table></div>
+
+      <div class="callout"><span class="label">Mental model</span><p>Angular is a <strong>tree of components</strong>. Each keeps its slice of the screen in sync with its data. You declare the relationship (bindings) once; Angular does the updating forever.</p></div>

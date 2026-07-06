@@ -1,0 +1,30 @@
+<p>For shared state across a large app, NgRx keeps one centralized, read-only store with a strict one-way flow. You never mutate state directly — you dispatch <strong>actions</strong>; <strong>reducers</strong> produce new state; <strong>effects</strong> handle async; <strong>selectors</strong> read.</p>
+      <div class="ascii">Component ──dispatch(action)──► Reducer ──► Store (new state) ──select──► Component
+                  │                                     ▲
+                  └──► Effect ──(API call)──► dispatch(success/failure)</div>
+
+      <h4>Actions — "something happened" (the async triad)</h4>
+      <pre><code>export const search        = createAction('[Q] Search', props&lt;{ payload: Req }&gt;());
+export const searchSuccess = createAction('[Q] Search Success', props&lt;{ data: Q[] }&gt;());
+export const searchFailure = createAction('[Q] Search Failure', props&lt;{ error: any }&gt;());</code></pre>
+
+      <h4>Reducer — pure <code>(state, action) =&gt; newState</code>, never mutates</h4>
+      <pre><code>export const reducer = createReducer(initialState,
+  on(search,        (s) =&gt; ({ ...s, isLoading: true })),
+  on(searchSuccess, (s, { data }) =&gt; ({ ...s, isLoading: false, data })),
+  on(searchFailure, (s, { error }) =&gt; ({ ...s, isLoading: false, error })),
+);</code></pre>
+
+      <h4>Effect — side effects live here</h4>
+      <pre><code>getQuestions$ = createEffect(() =&gt; this.actions$.pipe(
+  ofType(search),
+  switchMap(({ payload }) =&gt; this.api.search(payload).pipe(
+    map(res =&gt; searchSuccess({ data: res.items })),
+    catchError(err =&gt; of(searchFailure({ error: err }))),  <span class="cmt">// map error to a failure action</span>
+  )),
+));</code></pre>
+
+      <h4>Selector — memoized reads</h4>
+      <pre><code>export const selectState = createFeatureSelector&lt;QState&gt;('questions');
+export const selectList  = createSelector(selectState, s =&gt; s.data);</code></pre>
+      <div class="callout iv"><span class="label">Interview</span><p><em>"Why can't a reducer call an API?"</em> Reducers must be <strong>pure</strong> — same inputs, same output, no side effects — so state changes are predictable, testable, and time-travel-debuggable. Async/side effects go in <strong>effects</strong>. Also know: <strong>immutability</strong> (why <code>...spread</code>) is what lets <code>OnPush</code> and memoized selectors detect change by reference.</p></div>

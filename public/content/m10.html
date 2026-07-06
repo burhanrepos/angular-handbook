@@ -1,0 +1,29 @@
+<h3>Change Detection &amp; OnPush</h3>
+      <p>Change detection keeps the screen synced to data. <code>OnPush</code> tells Angular to re-check a component only when: an <strong>input reference changes</strong>, an <strong>event fires in it</strong>, an <strong>async pipe emits</strong>, or a <strong>signal it reads changes</strong> — letting it skip whole subtrees.</p>
+      <div class="callout"><span class="label">Why the conventions exist</span><p><code>OnPush</code> reacts to <em>reference</em> changes, not mutations. That's exactly why NgRx uses immutable updates, why signals use <code>.set()</code>, and why the <code>async</code> pipe is preferred — they all produce the notifications <code>OnPush</code> needs.</p></div>
+
+      <h3>Lifecycle hooks</h3>
+      <div class="table-wrap"><table>
+        <tr><th>Hook</th><th>When</th><th>Use for</th></tr>
+        <tr><td><code>constructor</code></td><td>created</td><td>inject deps, set up <code>effect()</code></td></tr>
+        <tr><td><code>ngOnInit</code></td><td>after first inputs</td><td>init, build forms, load data</td></tr>
+        <tr><td><code>ngOnChanges</code></td><td>on input change</td><td>react to inputs (legacy; use signals/<code>effect</code>)</td></tr>
+        <tr><td><code>ngAfterViewInit</code></td><td>after view renders</td><td>DOM access, <code>viewChild()</code></td></tr>
+        <tr><td><code>ngOnDestroy</code></td><td>before removal</td><td>manual cleanup</td></tr>
+      </table></div>
+      <p>Modern shift: <code>effect()</code> replaces much of <code>ngOnChanges</code>; <code>takeUntilDestroyed()</code> replaces manual <code>ngOnDestroy</code> unsubscribes; <code>afterNextRender</code>/<code>afterRender</code> handle browser-only post-render work.</p>
+
+      <h3>GraphQL &amp; Apollo</h3>
+      <p>Alongside REST, Angular apps use Apollo for GraphQL. A code-generation workflow (<code>npm run generate</code>) turns <code>.graphql</code> files into typed service classes. Queries use <code>.watch().valueChanges</code> (an Observable); mutations use <code>.mutate()</code>. Access is wrapped in a facade so components never touch Apollo directly.</p>
+
+      <h3>Testing (Vitest / Jasmine)</h3>
+      <pre><code>describe('CountItemComponent', () =&gt; {
+  let fixture: ComponentFixture&lt;CountItemComponent&gt;;
+  beforeEach(async () =&gt; {
+    await TestBed.configureTestingModule({ imports: [CountItemComponent] }).compileComponents();
+    fixture = TestBed.createComponent(CountItemComponent);
+    fixture.detectChanges();
+  });
+  it('should create', () =&gt; expect(fixture.componentInstance).toBeTruthy());
+});</code></pre>
+      <p><strong>TestBed</strong> builds an isolated component; <strong>fixture</strong> wraps it (<code>.componentInstance</code>, <code>.nativeElement</code>, <code>.detectChanges()</code>); <strong>expect</strong> asserts. DI lets you provide mocks. Test types: unit, component (with DOM), integration, and E2E (Cypress/Playwright).</p>

@@ -1,0 +1,11 @@
+<p>Angular has a built-in, <strong>compile-time</strong> i18n system. You mark text, extract it, translate, and build one bundle per locale.</p>
+      <pre><code>&lt;h1 i18n="site header|Main page title@@homeTitle"&gt;Welcome&lt;/h1&gt;
+&lt;img [alt]="alt" i18n-alt /&gt;   <span class="cmt">// translate an attribute with i18n-{attr}</span></code></pre>
+      <ul>
+        <li><strong><code>i18n</code> attribute</strong> marks translatable text. Syntax: <code>meaning|description@@customId</code>.</li>
+        <li><strong><code>$localize</code></strong> — a tagged template for translating strings in TS: <code>$localize`Hello ${name}`</code>.</li>
+        <li><strong>ICU expressions</strong> handle plurals/gender: <code>{count, plural, =0 {no items} =1 {one item} other {&#123;&#123;count&#125;&#125; items}}</code> and <code>{gender, select, male {...} female {...} other {...}}</code>.</li>
+        <li><strong>Extract</strong>: <code>ng extract-i18n</code> → an XLIFF/XMB file translators fill in. Configure locales in <code>angular.json</code>; build produces one app per locale.</li>
+        <li><strong><code>LOCALE_ID</code></strong> drives locale-aware <code>date</code>/<code>number</code>/<code>currency</code> pipes; register locale data with <code>registerLocaleData()</code>.</li>
+      </ul>
+      <div class="callout"><span class="label">Compile-time vs runtime</span><p>Angular's native i18n is <strong>compile-time</strong> (a separate bundle per language, best performance, ideal for SSR/SEO). Libraries like <strong>ngx-translate</strong> / Transloco do <strong>runtime</strong> i18n (switch language without rebuild, one bundle) — more flexible, slightly heavier. Many real apps use ngx-translate for dynamic language switching.</p></div>

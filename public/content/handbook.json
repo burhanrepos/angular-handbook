@@ -1,0 +1,58 @@
+{
+  "nav": [
+    {
+      "heading": "Foundations",
+      "links": [
+        { "href": "#intro", "num": "0", "label": "How to use this" },
+        { "href": "#m1", "num": "1", "label": "Fundamentals" },
+        { "href": "#m2", "num": "2", "label": "Component I/O & Signals" },
+        { "href": "#m3", "num": "3", "label": "Directives & Control Flow" },
+        { "href": "#m4", "num": "4", "label": "Services & DI" },
+        { "href": "#m5", "num": "5", "label": "HTTP & RxJS" }
+      ]
+    },
+    {
+      "heading": "Building blocks",
+      "links": [
+        { "href": "#m6", "num": "6", "label": "Reactive Forms" },
+        { "href": "#m7", "num": "7", "label": "Routing" },
+        { "href": "#m8", "num": "8", "label": "Pipes" },
+        { "href": "#m9", "num": "9", "label": "NgRx State" }
+      ]
+    },
+    {
+      "heading": "Advanced & interview",
+      "links": [
+        { "href": "#m10", "num": "10", "label": "CD, Lifecycle, GraphQL, Testing" },
+        { "href": "#m11", "num": "11", "label": "Content Projection" },
+        { "href": "#m12", "num": "12", "label": "Modules vs Standalone" },
+        { "href": "#m13", "num": "13", "label": "SSR & Hydration" },
+        { "href": "#m14", "num": "14", "label": "Internationalization" },
+        { "href": "#m15", "num": "15", "label": "Security & A11y" },
+        { "href": "#m16", "num": "16", "label": "Performance & Zoneless" }
+      ]
+    },
+    {
+      "heading": "Interview prep",
+      "links": [{ "href": "#questions", "label": "Popular Q&A (100+)" }]
+    }
+  ],
+  "modules": [
+    { "id": "m1", "number": "01", "kind": "Foundations", "title": "Fundamentals: components, templates, binding" },
+    { "id": "m2", "number": "02", "kind": "Foundations", "title": "Component I/O & Signals" },
+    { "id": "m3", "number": "03", "kind": "Foundations", "title": "Directives & Control Flow" },
+    { "id": "m4", "number": "04", "kind": "Foundations", "title": "Services & Dependency Injection" },
+    { "id": "m5", "number": "05", "kind": "Foundations", "title": "HTTP & RxJS Observables" },
+    { "id": "m6", "number": "06", "kind": "Building blocks", "title": "Reactive Forms" },
+    { "id": "m7", "number": "07", "kind": "Building blocks", "title": "Routing" },
+    { "id": "m8", "number": "08", "kind": "Building blocks", "title": "Pipes" },
+    { "id": "m9", "number": "09", "kind": "Building blocks", "title": "NgRx State Management" },
+    { "id": "m10", "number": "10", "kind": "Advanced", "title": "Change Detection, Lifecycle, GraphQL, Testing" },
+    { "id": "m11", "number": "11", "kind": "Advanced", "title": "Content Projection & Template Mechanics" },
+    { "id": "m12", "number": "12", "kind": "Advanced", "title": "NgModules vs Standalone" },
+    { "id": "m13", "number": "13", "kind": "Advanced", "title": "SSR, SSG & Hydration" },
+    { "id": "m14", "number": "14", "kind": "Advanced", "title": "Internationalization (i18n)" },
+    { "id": "m15", "number": "15", "kind": "Advanced", "title": "Security & Accessibility" },
+    { "id": "m16", "number": "16", "kind": "Advanced", "title": "Performance, Modern Reactivity & Tooling" }
+  ]
+}

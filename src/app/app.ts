@@ -1,22 +1,20 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { HandbookService } from './handbook.service';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { Toc } from './handbook/toc/toc';
+import { Hero } from './handbook/hero/hero';
+import { ModuleSection } from './handbook/module-section/module-section';
+import { QandA } from './handbook/qa/qa';
+import { Footer } from './handbook/footer/footer';
+import { HandbookService } from './handbook/handbook.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.html',
   styleUrl: './app.css',
+  imports: [Toc, Hero, ModuleSection, QandA, Footer],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class App implements OnInit {
+export class App {
   private readonly handbook = inject(HandbookService);
-  private readonly sanitizer = inject(DomSanitizer);
-
-  // Signal so the view re-renders once the async content resolves.
-  // (This app is zoneless, so a plain property assignment would not.)
-  readonly handbookHtml = signal<SafeHtml>('');
-
-  async ngOnInit(): Promise<void> {
-    const html = await this.handbook.loadContent();
-    this.handbookHtml.set(this.sanitizer.bypassSecurityTrustHtml(html));
-  }
+  readonly modules = toSignal(this.handbook.getModules(), { initialValue: [] });
 }

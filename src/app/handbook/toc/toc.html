@@ -1,0 +1,11 @@
+<nav class="toc" aria-label="Table of contents">
+  <div class="toc-brand"><span class="a">A</span>ngular Handbook</div>
+  <div class="toc-sub">Zero → Interview-Ready</div>
+
+  @for (group of groups(); track group.heading) {
+    <h4>{{ group.heading }}</h4>
+    @for (link of group.links; track link.href) {
+      <a [href]="link.href">@if (link.num) {<span class="num">{{ link.num }}</span>}{{ link.label }}</a>
+    }
+  }
+</nav>

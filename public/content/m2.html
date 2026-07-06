@@ -1,0 +1,37 @@
+<p>The golden rule of Angular data flow: <strong>data flows DOWN via inputs, events flow UP via outputs</strong>. A child never reaches into its parent; the parent hands data down, the child emits events up.</p>
+
+      <h3>Inputs &amp; Outputs <span class="pill modern">modern</span></h3>
+      <pre><code>readonly item = input.required&lt;Item&gt;();          <span class="cmt">// required input (parent MUST pass)</span>
+readonly size = input&lt;number&gt;(80);               <span class="cmt">// optional, with default</span>
+readonly replySubmitted = output&lt;ReplyPayload&gt;(); <span class="cmt">// event out</span>
+
+<span class="cmt">// reading an input is a FUNCTION CALL — the #1 beginner mistake is forgetting ()</span>
+const current = this.item();
+this.replySubmitted.emit({ questionId, replyText });</code></pre>
+      <p>The parent wires them with brackets:</p>
+      <pre><code>&lt;app-qa-card [item]="question" (replySubmitted)="handleReply($event)" /&gt;</code></pre>
+      <div class="table-wrap"><table>
+        <tr><th>Brackets</th><th>Direction</th><th>Purpose</th></tr>
+        <tr><td><code>[ ]</code></td><td>in (down)</td><td>property / input binding</td></tr>
+        <tr><td><code>( )</code></td><td>out (up)</td><td>event / output binding</td></tr>
+        <tr><td><code>[( )]</code></td><td>both</td><td>two-way ("banana in a box")</td></tr>
+      </table></div>
+
+      <h3>Signals: reactive state</h3>
+      <p>A <strong>signal</strong> is a box holding a value; when you change it, Angular re-renders whatever reads it.</p>
+      <pre><code>count = signal(0);
+this.count();              <span class="cmt">// READ  (call it)</span>
+this.count.set(5);         <span class="cmt">// WRITE (replace)</span>
+this.count.update(n =&gt; n+1);<span class="cmt">// WRITE (from previous)</span>
+
+color = computed(() =&gt; this.score() &gt;= 80 ? 'green' : 'red'); <span class="cmt">// derived, cached, auto-updates</span>
+
+constructor() {
+  effect(() =&gt; { if (this.description()) this.checkOverflow(); }); <span class="cmt">// side effect on change</span>
+}</code></pre>
+      <ul>
+        <li><strong><code>computed()</code></strong> — derived value; recalculates only when its signal dependencies change. Prefer this over calling methods in templates.</li>
+        <li><strong><code>effect()</code></strong> — run a side effect when signals change. Use sparingly.</li>
+        <li><strong>Never use <code>.mutate()</code></strong> — always <code>.set()</code> / <code>.update()</code>.</li>
+      </ul>
+      <div class="callout iv"><span class="label">Interview</span><p><em>"Why <code>computed()</code> instead of a getter?"</em> A computed is memoized — it recomputes only when a dependency changes. A getter/method in a template runs on <strong>every</strong> change-detection cycle.</p></div>

@@ -1,0 +1,30 @@
+<p>Before Angular 14, components couldn't import anything themselves — they were grouped into <strong>NgModules</strong>. Since v17, <strong>standalone</strong> is the default.</p>
+      <div class="table-wrap"><table>
+        <tr><th>@NgModule field</th><th>Contains</th></tr>
+        <tr><td><code>declarations</code></td><td>components/directives/pipes this module owns (each in exactly one module)</td></tr>
+        <tr><td><code>imports</code></td><td>other modules (or standalone items) whose exports it needs</td></tr>
+        <tr><td><code>providers</code></td><td>services / DI tokens</td></tr>
+        <tr><td><code>exports</code></td><td>what importers of this module may use</td></tr>
+      </table></div>
+
+      <h3><code>forRoot()</code> vs <code>forChild()</code></h3>
+      <p><code>forRoot()</code> — call <strong>once</strong> at the root; registers a library's global singletons + config (router, store core). <code>forChild()</code>/<code>forFeature()</code> — per feature; registers feature-scoped pieces without recreating singletons.</p>
+
+      <h3>Providers &amp; <code>multi: true</code></h3>
+      <pre><code>{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }</code></pre>
+      <p><code>multi: true</code> means "add to a collection under this token" — that's how the interceptor <em>chain</em> is built.</p>
+
+      <h3>Standalone bootstrap <span class="pill modern">modern</span></h3>
+      <pre><code>bootstrapApplication(AppComponent, {
+  providers: [
+    provideRouter(routes),                              <span class="cmt">// replaces RouterModule.forRoot</span>
+    provideHttpClient(withInterceptors([authInterceptor])), <span class="cmt">// functional interceptors</span>
+    provideAnimations(),
+  ],
+});</code></pre>
+      <div class="table-wrap"><table>
+        <tr><th>Legacy (modules)</th><th>Modern (standalone)</th></tr>
+        <tr><td><code>RouterModule.forRoot(routes)</code></td><td><code>provideRouter(routes)</code></td></tr>
+        <tr><td><code>HttpClientModule</code> + <code>HTTP_INTERCEPTORS</code></td><td><code>provideHttpClient(withInterceptors([...]))</code></td></tr>
+        <tr><td><code>bootstrapModule(AppModule)</code></td><td><code>bootstrapApplication(AppComponent, config)</code></td></tr>
+      </table></div>

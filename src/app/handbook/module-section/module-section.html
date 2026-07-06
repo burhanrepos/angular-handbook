@@ -1,0 +1,7 @@
+<section class="module" [id]="meta().id">
+  <div class="module-tag">
+    <span class="mnum">Module {{ meta().number }}</span><span class="mkind">{{ meta().kind }}</span>
+  </div>
+  <h2>{{ meta().title }}</h2>
+  <div [innerHTML]="body() | trustHtml"></div>
+</section>

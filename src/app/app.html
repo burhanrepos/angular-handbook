@@ -1,1 +1,13 @@
-<div [innerHTML]="handbookHtml()"></div>
+<div class="layout">
+  <app-toc />
+  <main>
+    <div class="wrap">
+      <app-hero />
+      @for (module of modules(); track module.id) {
+        <app-module-section [meta]="module" />
+      }
+      <app-qa />
+      <app-footer />
+    </div>
+  </main>
+</div>

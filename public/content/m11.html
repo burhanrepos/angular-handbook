@@ -1,0 +1,27 @@
+<p>Content projection lets a component render caller-supplied markup — Angular's equivalent of React <code>children</code> / Web Component <code>&lt;slot&gt;</code>.</p>
+      <pre><code><span class="cmt">// single slot</span>
+&lt;div class="card"&gt;&lt;ng-content&gt;&lt;/ng-content&gt;&lt;/div&gt;
+
+<span class="cmt">// multi-slot with select</span>
+&lt;ng-content select="[slot=header]"&gt;&lt;/ng-content&gt;
+&lt;ng-content select="[slot=end]"&gt;&lt;/ng-content&gt;
+
+<span class="cmt">// usage</span>
+&lt;app-card&gt;&lt;h2 slot="header"&gt;Title&lt;/h2&gt;&lt;p&gt;Body&lt;/p&gt;&lt;/app-card&gt;</code></pre>
+      <div class="table-wrap"><table>
+        <tr><th>Tag</th><th>Purpose</th></tr>
+        <tr><td><code>&lt;ng-content&gt;</code></td><td>project the caller's content into a slot</td></tr>
+        <tr><td><code>&lt;ng-template&gt;</code></td><td>markup that isn't rendered until asked (a <code>TemplateRef</code>)</td></tr>
+        <tr><td><code>&lt;ng-container&gt;</code></td><td>a logical group that renders NO element</td></tr>
+      </table></div>
+      <pre><code><span class="cmt">// define once, render in multiple places — avoids duplication</span>
+&lt;ng-container *ngTemplateOutlet="content"&gt;&lt;/ng-container&gt;
+&lt;ng-template #content&gt;&lt;ng-content&gt;&lt;/ng-content&gt;&lt;/ng-template&gt;</code></pre>
+
+      <h3>Queries &amp; two-way binding</h3>
+      <pre><code>expandDir = viewChild(ExpandCollapseDirective);  <span class="cmt">// query YOUR view</span>
+projected = contentChild(SomeComponent);          <span class="cmt">// query PROJECTED content</span>
+this.expandDir()?.toggle();
+
+value = model&lt;string&gt;('');   <span class="cmt">// creates input `value` + output `valueChange` → supports [(value)]</span></code></pre>
+      <p><code>[(x)]="v"</code> desugars to <code>[x]="v" (xChange)="v=$event"</code>. <code>model()</code> authors that pair as one writable signal.</p>
