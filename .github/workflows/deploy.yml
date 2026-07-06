@@ -26,6 +26,10 @@ jobs:
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
+        with:
+          # Enable Pages (build type: GitHub Actions) if it isn't already,
+          # instead of failing with "Get Pages site failed".
+          enablement: true
 
       - name: Set up Node
         uses: actions/setup-node@v4
