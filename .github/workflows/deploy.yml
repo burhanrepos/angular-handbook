@@ -12,10 +12,12 @@ permissions:
   pages: write
   id-token: write
 
-# Only one deployment at a time; a newer push cancels an in-progress run.
+# Only one deployment at a time. Do NOT cancel an in-progress deploy; let
+# production deployments finish (queued runs between the in-progress and the
+# latest are skipped).
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -23,13 +25,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
-        with:
-          # Enable Pages (build type: GitHub Actions) if it isn't already,
-          # instead of failing with "Get Pages site failed".
-          enablement: true
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -61,7 +56,7 @@ jobs:
           touch "$DIST/.nojekyll"
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v3
         with:
           path: dist/angular-handbook-site/browser
 
